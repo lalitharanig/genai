@@ -1,20 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenAI } from "@google/genai";
+import { testAgent } from "@/app/agents/generate_text";
 
 export async function POST(request: NextRequest) {
-  const { message } = await request.json();
-  const apiKey = process.env.GOOGLE_GENAI_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json({ success: false, error: "API key missing" }, { status: 500 });
-  }
-  try {
-    const ai = new GoogleGenAI({ apiKey });
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: message,
-    });
-    return NextResponse.json({ success: true, text: response.text });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message || "AI error" }, { status: 500 });
-  }
+  const { message, conversation } = await request.json();
+  console.log(`Received message: ${message}`);
+  // conversation is array of objects: { text, sender }
+  const conversationHistory = Array.isArray(conversation) ? conversation : [];
+  console.log(`Conversation history: ${JSON.stringify(conversationHistory)}`);
+
+  // Convert to array of strings for testAgent, or update testAgent to accept sender info
+  const text = await testAgent({
+    userMessage: message,
+    conversation: conversationHistory
+  });
+
+  return NextResponse.json({ success: true, text });
 }
