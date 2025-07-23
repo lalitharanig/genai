@@ -11,7 +11,7 @@ async function sendToAI(message: string): Promise<string> {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message }),
-    });
+    });  
     const data = await res.json();
     if (data.success) return data.text || "(No response)";
     return data.error || "Error";
