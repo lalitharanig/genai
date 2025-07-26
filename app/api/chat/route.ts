@@ -5,7 +5,7 @@ import {
   agentWithStructuredOutput,
   agentWithFunctionCalling
 } from "@/app/agents/generate_text";
-
+// test comment
 export async function POST(request: NextRequest) {
   const { message, conversation } = await request.json();
   console.log(`Received message: ${message}`);
