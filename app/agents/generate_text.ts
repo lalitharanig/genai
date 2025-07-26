@@ -2,6 +2,7 @@ import { Content, GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({apiKey: process.env.GOOGLE_GENAI_API_KEY});
 const systemInstructionContent = `You are a helpful AI assistant. Respond to the user's messages in a friendly and informative manner.`;
+//test
 
 export async function testAgent({userMessage, conversation}: {userMessage: string, conversation: string[]}) {
   const conversationHistoryForModel: Content[] = [{ role: "user", parts: [{ text: userMessage + "\n" + conversation.join("\n") }] }];
