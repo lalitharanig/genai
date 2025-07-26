@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { testAgent } from "@/app/agents/generate_text";
+import {
+  agentWithSystemInstruction,
+  agentWithSampling,
+  agentWithStructuredOutput,
+  agentWithFunctionCalling
+} from "@/app/agents/generate_text";
 
 export async function POST(request: NextRequest) {
   const { message, conversation } = await request.json();
@@ -8,11 +13,43 @@ export async function POST(request: NextRequest) {
   const conversationHistory = Array.isArray(conversation) ? conversation : [];
   console.log(`Conversation history: ${JSON.stringify(conversationHistory)}`);
 
-  // Convert to array of strings for testAgent, or update testAgent to accept sender info
-  const text = await testAgent({
-    userMessage: message,
+  // Sample variables for all agents
+  const userMessage = message;
+  const personality = "friendly"; // sample personality
+  const temperature = 0.3; // sample value
+  const topK = 40; // sample value
+  const topP = 0.95; // sample value
+
+  // Call each agent with required arguments
+  const systemInstructionResult = await agentWithSystemInstruction({
+    userMessage,
+    personality,
     conversation: conversationHistory
   });
 
-  return NextResponse.json({ success: true, text });
+  const samplingResult = await agentWithSampling({
+    userMessage,
+    temperature,
+    topK,
+    topP,
+    conversation: conversationHistory
+  });
+
+  const structuredOutputResult = await agentWithStructuredOutput({
+    userMessage,
+    conversation: conversationHistory
+  });
+
+  const functionCallingResult = await agentWithFunctionCalling({
+    userMessage,
+    conversation: conversationHistory
+  });
+
+  return NextResponse.json({
+    success: true,
+    systemInstructionResult,
+    samplingResult,
+    structuredOutputResult,
+    functionCallingResult
+  });
 }
